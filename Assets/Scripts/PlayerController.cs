@@ -37,14 +37,6 @@ public class PlayerController : MonoBehaviour
 
     #endregion
 
-    [Header("Inventory")]
-    [SerializeField] private int ammo = 50;
-    [SerializeField] private int health = 80;
-    private int maxHealth = 100;
-    private int maxAmmo = 50;
-    [SerializeField] private int ammoMagazine = 15;
-    private int ammoMagazineMax = 15;
-
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -112,23 +104,8 @@ public class PlayerController : MonoBehaviour
 
         Debug.Log(playerInput.currentControlScheme);
     }
-    private void GetAmmo()
-    {
-        ammo = Mathf.Clamp(ammo + 10, 0, maxAmmo);
-    }
 
-    private void ExpendAmmo()
-    {
-        ammoMagazine = Mathf.Clamp(ammoMagazine - 1, 0, ammoMagazineMax);
-    }
 
-    private void Reload()
-    {
-        int ammoNeeded = ammoMagazineMax - ammoMagazine;
-        int ammoAvailable = ammoNeeded < ammo ? ammoNeeded : ammo;
-        ammo -= ammoAvailable;
-        ammoMagazine += ammoAvailable;
-    }
 
 
     // private void ProcessZombieHit()
@@ -155,11 +132,6 @@ public class PlayerController : MonoBehaviour
     //     }
     // }
 
-    public void TakeHit(float amount)
-    {
-        health = (int)Mathf.Clamp(health - amount, 0, maxHealth);
-    }
-
     #region Control Input Functions
     public void OnLook(InputAction.CallbackContext context)
     {
@@ -182,7 +154,7 @@ public class PlayerController : MonoBehaviour
         {
             if (IsGrounded())
             {
-                
+
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             }
         }
@@ -192,12 +164,6 @@ public class PlayerController : MonoBehaviour
     {
         if (context.phase == InputActionPhase.Performed && !anim.GetBool("fire"))
         {
-            if (ammoMagazine > 0)
-            {
-                anim.SetTrigger("fire");
-                //ProcessZombieHit();
-                ExpendAmmo();
-            }
         }
     }
 
@@ -205,14 +171,6 @@ public class PlayerController : MonoBehaviour
     {
         if (context.phase == InputActionPhase.Performed)
         {
-            if (ammo > 0)
-            {
-                if (ammoMagazine != ammoMagazineMax)
-                {
-                    anim.SetTrigger("reload");
-                    Reload();
-                }
-            }
 
         }
     }
@@ -232,7 +190,6 @@ public class PlayerController : MonoBehaviour
         if (other.CompareTag("Ammo"))
         {
             Destroy(other.gameObject);
-            GetAmmo();
             Debug.Log("Picked up ammo");
         }
         if (other.CompareTag("Medkit"))
