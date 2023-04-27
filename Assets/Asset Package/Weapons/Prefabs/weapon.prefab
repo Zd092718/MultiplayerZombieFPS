@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4410051066877661230}
   - component: {fileID: 4163979027671494299}
   - component: {fileID: 876563759782432147}
+  - component: {fileID: 6907312822356126809}
   m_Layer: 0
   m_Name: weapon
   m_TagString: Untagged
@@ -28,6 +29,7 @@ Transform:
   m_LocalRotation: {x: 0.15665993, y: 0.7602055, z: 0.5510621, w: -0.3063916}
   m_LocalPosition: {x: 0.000618, y: 0.002263, z: -0.00047}
   m_LocalScale: {x: 0.011259011, y: 0.011259011, z: 0.011258922}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -82,3 +84,15 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6907312822356126809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 435075660291143935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb3d164fbdde36f4cbc4ddc3496c184c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

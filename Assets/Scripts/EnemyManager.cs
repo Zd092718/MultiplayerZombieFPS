@@ -8,6 +8,8 @@ public class EnemyManager : MonoBehaviour
     GameObject player;
     NavMeshAgent agent;
     [SerializeField] Animator anim;
+    [SerializeField] float damage = 5f;
+    [SerializeField] float health = 20f;
 
     // Start is called before the first frame update
     void Start()
@@ -34,7 +36,17 @@ public class EnemyManager : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            Debug.Log("Player hit");
+            player.GetComponent<PlayerController>().PlayerHit(damage);
+        }
+    }
+
+    public void TakeDamage(float damage)
+    {
+        health -= damage;
+        if (health <= 0)
+        {
+            //Destroy Zombie
+            Destroy(gameObject);
         }
     }
 }

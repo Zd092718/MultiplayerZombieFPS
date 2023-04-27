@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -28,6 +29,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Vector2 mouseDelta;
     #endregion
     #region Properties
+    [Header("Properties")]
     [SerializeField] private Animator anim;
     [SerializeField] private Transform shotPoint;
     private Vector3 velocity;
@@ -36,6 +38,16 @@ public class PlayerController : MonoBehaviour
     private CapsuleCollider capsule;
 
     #endregion
+    #region Weapon  
+    [Header("Weapon")]
+    [SerializeField] float range = 100f;
+    [SerializeField] float weaponDamage = 5f;
+    #endregion
+    #region PlayerInventory
+    [Header("Inventory")]
+    [SerializeField] float health = 100;
+    #endregion
+
 
     private void Awake()
     {
@@ -43,12 +55,10 @@ public class PlayerController : MonoBehaviour
         capsule = GetComponent<CapsuleCollider>();
         playerInput = GetComponent<PlayerInput>();
     }
-
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
     }
-
     private void FixedUpdate()
     {
         Move();
@@ -105,32 +115,30 @@ public class PlayerController : MonoBehaviour
         Debug.Log(playerInput.currentControlScheme);
     }
 
+    void Shoot()
+    {
+        anim.SetBool("isShooting", true);
+        RaycastHit hit;
 
+        if (Physics.Raycast(shotPoint.position, transform.forward, out hit, range))
+        {
+            EnemyManager enemy = hit.transform.GetComponent<EnemyManager>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(weaponDamage);
+            }
+        }
+    }
 
+    public void PlayerHit(float damage)
+    {
+        health -= damage;
 
-    // private void ProcessZombieHit()
-    // {
-    //     RaycastHit hit;
-    //     if (Physics.Raycast(shotPoint.position, shotPoint.forward, out hit, 50))
-    //     {
-    //         GameObject hitZombie = hit.collider.gameObject;
-    //         if (hitZombie.CompareTag("Zombie"))
-    //         {
-    //             ZombieController zc = hitZombie.GetComponent<ZombieController>();
-    //             if (Random.Range(0, 10) < 5)
-    //             {
-    //                 GameObject ragdollPrefab = zc.Ragdoll;
-    //                 GameObject newRagdoll = Instantiate(ragdollPrefab, hitZombie.transform.position, hitZombie.transform.rotation);
-    //                 newRagdoll.transform.Find("Hips").GetComponent<Rigidbody>().AddForce(shotPoint.forward * 10000);
-    //                 Destroy(hitZombie);
-    //             }
-    //             else
-    //             {
-    //                 zc.KillZombie();
-    //             }
-    //         }
-    //     }
-    // }
+        if (health <= 0)
+        {
+            SceneManager.LoadScene(0);
+        }
+    }
 
     #region Control Input Functions
     public void OnLook(InputAction.CallbackContext context)
@@ -162,8 +170,13 @@ public class PlayerController : MonoBehaviour
 
     public void OnFire(InputAction.CallbackContext context)
     {
-        if (context.phase == InputActionPhase.Performed && !anim.GetBool("fire"))
+        if (anim.GetBool("isShooting"))
         {
+            anim.SetBool("isShooting", false);
+        }
+        if (context.phase == InputActionPhase.Performed)
+        {
+            Shoot();
         }
     }
 
@@ -175,27 +188,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void OnMelee(InputAction.CallbackContext context)
-    {
-        if (context.phase == InputActionPhase.Performed)
-        {
-            anim.SetTrigger("melee");
-        }
-    }
     #endregion
 
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Ammo"))
-        {
-            Destroy(other.gameObject);
-            Debug.Log("Picked up ammo");
-        }
-        if (other.CompareTag("Medkit"))
-        {
-            Destroy(other.gameObject);
-            Debug.Log("Picked up medkit");
-        }
-    }
 }
