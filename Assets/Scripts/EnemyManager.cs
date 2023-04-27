@@ -7,9 +7,12 @@ public class EnemyManager : MonoBehaviour
 {
     GameObject player;
     NavMeshAgent agent;
+    GameManager gameManager;
     [SerializeField] Animator anim;
     [SerializeField] float damage = 5f;
     [SerializeField] float health = 20f;
+
+    public GameManager GameManager { get => gameManager; set => gameManager = value; }
 
     // Start is called before the first frame update
     void Start()
@@ -45,6 +48,7 @@ public class EnemyManager : MonoBehaviour
         health -= damage;
         if (health <= 0)
         {
+            gameManager.EnemiesAlive--;
             //Destroy Zombie
             Destroy(gameObject);
         }
