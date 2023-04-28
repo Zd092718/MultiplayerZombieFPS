@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI roundsSurvivedText;
     [SerializeField] TextMeshProUGUI healthText;
     [SerializeField] GameObject endScreen;
+    [SerializeField] GameObject pauseScreen;
 
     public int EnemiesAlive { get => enemiesAlive; set => enemiesAlive = value; }
     public int Round { get => round; set => round = value; }
@@ -67,9 +69,31 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1;
     }
 
+    public void Continue()
+    {
+        pauseScreen.SetActive(false);
+        Cursor.lockState = CursorLockMode.Locked;
+        Time.timeScale = 1;
+    }
+
     public void ReturnToMenu()
     {
         SceneManager.LoadScene(0);
         Time.timeScale = 1.0f;
+    }
+
+    public void Pause()
+    {
+        Time.timeScale = 0;
+        Cursor.lockState = CursorLockMode.None;
+        pauseScreen.SetActive(true);
+    }
+
+    public void OnPause(InputAction.CallbackContext context)
+    {
+        if(context.phase == InputActionPhase.Performed)
+        {
+            Pause();
+        }
     }
 }
