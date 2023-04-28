@@ -57,6 +57,7 @@ public class GameManager : MonoBehaviour
 
     public void EndGame()
     {
+        playerController.enabled = false;
         Time.timeScale = 0;
         Cursor.lockState = CursorLockMode.None;
         endScreen.SetActive(true);
@@ -65,12 +66,14 @@ public class GameManager : MonoBehaviour
 
     public void Reset()
     {
+        playerController.enabled = true;
         SceneManager.LoadScene(1);
         Time.timeScale = 1;
     }
 
     public void Continue()
     {
+        playerController.enabled = true;
         pauseScreen.SetActive(false);
         Cursor.lockState = CursorLockMode.Locked;
         Time.timeScale = 1;
@@ -84,6 +87,7 @@ public class GameManager : MonoBehaviour
 
     public void Pause()
     {
+        playerController.enabled = false;
         Time.timeScale = 0;
         Cursor.lockState = CursorLockMode.None;
         pauseScreen.SetActive(true);

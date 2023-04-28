@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Look")]
     [SerializeField] private Transform cameraContainer;
+    [SerializeField] private GameObject playerCamera;
     [SerializeField] private float minXLook;
     [SerializeField] private float maxXLook;
     [SerializeField] private bool invertCamera;
@@ -25,6 +26,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float gamepadSensitivity;
     private float lookSensitivity;
     private float camCurXRot;
+    private Quaternion playerCameraOriginalRotation;
+    private float shakeTime;
+    private float shakeDuration;
     [SerializeField] private Vector2 mouseDelta;
     #endregion
     #region Properties
@@ -59,12 +63,24 @@ public class PlayerController : MonoBehaviour
     }
     private void Start()
     {
+        playerCameraOriginalRotation = playerCamera.transform.localRotation;
         Cursor.lockState = CursorLockMode.Locked;
+    }
+    private void Update()
+    {
+        if (shakeTime < shakeDuration)
+        {
+            shakeTime += Time.deltaTime;
+            CameraShake();
+        }
+        else if (playerCamera.transform.localRotation != playerCameraOriginalRotation)
+        {
+            playerCamera.transform.localRotation = playerCameraOriginalRotation;
+        }
     }
     private void FixedUpdate()
     {
         Move();
-
     }
 
     private void LateUpdate()
@@ -72,7 +88,7 @@ public class PlayerController : MonoBehaviour
         CameraLook();
     }
 
-    private void Move()
+    public void Move()
     {
         Vector3 dir = transform.forward * moveComposite.y + transform.right * moveComposite.x;
 
@@ -119,6 +135,7 @@ public class PlayerController : MonoBehaviour
 
     void Shoot()
     {
+
         anim.SetBool("isShooting", true);
         RaycastHit hit;
 
@@ -136,10 +153,20 @@ public class PlayerController : MonoBehaviour
     {
         health -= damage;
 
-        if(health <= 0)
+        if (health <= 0)
         {
             gameManager.EndGame();
         }
+        else
+        {
+            shakeTime = 0;
+            shakeDuration = 0.2f;
+        }
+    }
+
+    public void CameraShake()
+    {
+        playerCamera.transform.localRotation = Quaternion.Euler(Random.Range(-2, 2), 0, 0);
     }
 
     #region Control Input Functions
