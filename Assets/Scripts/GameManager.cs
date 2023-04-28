@@ -1,24 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance;
     [SerializeField] int enemiesAlive = 0;
     [SerializeField] int round = 0;
 
     [SerializeField] GameObject[] spawnPoints;
 
     [SerializeField] GameObject enemyPrefab;
+    [SerializeField] PlayerController playerController;
+
+    [SerializeField] TextMeshProUGUI roundText;
+    [SerializeField] TextMeshProUGUI roundsSurvivedText;
+    [SerializeField] TextMeshProUGUI healthText;
+    [SerializeField] GameObject endScreen;
 
     public int EnemiesAlive { get => enemiesAlive; set => enemiesAlive = value; }
-
-    // Start is called before the first frame update
-    void Start()
+    public int Round { get => round; set => round = value; }
+    private void Awake()
     {
-
+        Instance = this;
     }
-
     // Update is called once per frame
     void Update()
     {
@@ -27,6 +34,9 @@ public class GameManager : MonoBehaviour
             round++;
             NextWave(round);
         }
+
+        roundText.text = "Round " + round.ToString();
+        healthText.text = "Health: " + playerController.Health.ToString();
     }
 
     public void NextWave(int round)
@@ -41,5 +51,25 @@ public class GameManager : MonoBehaviour
             enemiesAlive++;
         }
 
+    }
+
+    public void EndGame()
+    {
+        Time.timeScale = 0;
+        Cursor.lockState = CursorLockMode.None;
+        endScreen.SetActive(true);
+        roundsSurvivedText.text = round.ToString();
+    }
+
+    public void Reset()
+    {
+        SceneManager.LoadScene(1);
+        Time.timeScale = 1;
+    }
+
+    public void ReturnToMenu()
+    {
+        SceneManager.LoadScene(0);
+        Time.timeScale = 1.0f;
     }
 }

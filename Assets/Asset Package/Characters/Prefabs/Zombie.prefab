@@ -1591,7 +1591,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   anim: {fileID: 7544459490567584518}
-  damage: 5
+  damage: 10
   health: 20
 --- !u!136 &3090700750132310962
 CapsuleCollider:

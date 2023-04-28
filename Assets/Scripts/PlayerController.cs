@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -31,6 +30,7 @@ public class PlayerController : MonoBehaviour
     #region Properties
     [Header("Properties")]
     [SerializeField] private Animator anim;
+    [SerializeField] private GameManager gameManager;
     [SerializeField] private Transform shotPoint;
     private Vector3 velocity;
     private PlayerInput playerInput;
@@ -46,6 +46,8 @@ public class PlayerController : MonoBehaviour
     #region PlayerInventory
     [Header("Inventory")]
     [SerializeField] float health = 100;
+
+    public float Health { get => health; set => health = value; }
     #endregion
 
 
@@ -134,9 +136,9 @@ public class PlayerController : MonoBehaviour
     {
         health -= damage;
 
-        if (health <= 0)
+        if(health <= 0)
         {
-            SceneManager.LoadScene(0);
+            gameManager.EndGame();
         }
     }
 
