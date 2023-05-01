@@ -46,6 +46,9 @@ public class PlayerController : MonoBehaviour
     [Header("Weapon")]
     [SerializeField] float range = 100f;
     [SerializeField] float weaponDamage = 5f;
+    [SerializeField] ParticleSystem muzzleFlash;
+    [SerializeField] GameObject hitParticles;
+
     #endregion
     #region PlayerInventory
     [Header("Inventory")]
@@ -54,7 +57,9 @@ public class PlayerController : MonoBehaviour
     public float Health { get => health; set => health = value; }
     #endregion
 
-
+    #region UI
+    [SerializeField] private CanvasGroup hurtPanel;
+    #endregion
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -68,6 +73,11 @@ public class PlayerController : MonoBehaviour
     }
     private void Update()
     {
+        Move();
+        if(hurtPanel.alpha > 0)
+        {
+            hurtPanel.alpha -= Time.deltaTime;
+        }
         if (shakeTime < shakeDuration)
         {
             shakeTime += Time.deltaTime;
@@ -77,10 +87,6 @@ public class PlayerController : MonoBehaviour
         {
             playerCamera.transform.localRotation = playerCameraOriginalRotation;
         }
-    }
-    private void FixedUpdate()
-    {
-        Move();
     }
 
     private void LateUpdate()
@@ -135,7 +141,7 @@ public class PlayerController : MonoBehaviour
 
     void Shoot()
     {
-
+        muzzleFlash.Play();
         anim.SetBool("isShooting", true);
         RaycastHit hit;
 
@@ -145,6 +151,10 @@ public class PlayerController : MonoBehaviour
             if (enemy != null)
             {
                 enemy.TakeDamage(weaponDamage);
+                GameObject instParticles = Instantiate(hitParticles, hit.point, Quaternion.LookRotation(hit.normal));
+                instParticles.transform.parent = hit.transform;
+
+                Destroy(instParticles, 2f);
             }
         }
     }
@@ -161,6 +171,7 @@ public class PlayerController : MonoBehaviour
         {
             shakeTime = 0;
             shakeDuration = 0.2f;
+            hurtPanel.alpha = 1;
         }
     }
 

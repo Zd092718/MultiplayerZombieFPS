@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class EnemyManager : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class EnemyManager : MonoBehaviour
     NavMeshAgent agent;
     GameManager gameManager;
     [SerializeField] Animator anim;
+    [SerializeField] Slider slider;
     [SerializeField] float damage = 5f;
     [SerializeField] float health = 20f;
 
@@ -19,11 +21,14 @@ public class EnemyManager : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
         agent = GetComponent<NavMeshAgent>();
+        slider.maxValue = health;
+        slider.value = health;
     }
 
     // Update is called once per frame
     void Update()
     {
+        slider.transform.LookAt(player.transform);
         agent.destination = player.transform.position;
         if (agent.velocity.magnitude > 1)
         {
@@ -46,6 +51,7 @@ public class EnemyManager : MonoBehaviour
     public void TakeDamage(float damage)
     {
         health -= damage;
+        slider.value = health;
         if (health <= 0)
         {
             gameManager.EnemiesAlive--;
