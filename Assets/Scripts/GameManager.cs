@@ -77,11 +77,13 @@ public class GameManager : MonoBehaviour
         pauseScreen.SetActive(false);
         Cursor.lockState = CursorLockMode.Locked;
         Time.timeScale = 1;
+        AudioListener.volume = 1;
     }
 
     public void ReturnToMenu()
     {
         SceneManager.LoadScene(0);
+        AudioListener.volume = 1;
         Time.timeScale = 1.0f;
     }
 
@@ -91,6 +93,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0;
         Cursor.lockState = CursorLockMode.None;
         pauseScreen.SetActive(true);
+        AudioListener.volume = 0;
     }
 
     public void OnPause(InputAction.CallbackContext context)

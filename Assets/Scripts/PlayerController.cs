@@ -48,6 +48,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float weaponDamage = 5f;
     [SerializeField] ParticleSystem muzzleFlash;
     [SerializeField] GameObject hitParticles;
+    [SerializeField] AudioClip gunShot;
+    
+    AudioSource source;
 
     #endregion
     #region PlayerInventory
@@ -70,6 +73,7 @@ public class PlayerController : MonoBehaviour
     {
         playerCameraOriginalRotation = playerCamera.transform.localRotation;
         Cursor.lockState = CursorLockMode.Locked;
+        source = GetComponent<AudioSource>();
     }
     private void Update()
     {
@@ -142,6 +146,7 @@ public class PlayerController : MonoBehaviour
     void Shoot()
     {
         muzzleFlash.Play();
+        source.PlayOneShot(gunShot);
         anim.SetBool("isShooting", true);
         RaycastHit hit;
 

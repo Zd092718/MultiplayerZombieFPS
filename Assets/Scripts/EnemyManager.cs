@@ -11,8 +11,18 @@ public class EnemyManager : MonoBehaviour
     GameManager gameManager;
     [SerializeField] Animator anim;
     [SerializeField] Slider slider;
+    [SerializeField] Canvas canvas;
     [SerializeField] float damage = 5f;
     [SerializeField] float health = 20f;
+    [SerializeField] bool playerInReach;
+    [SerializeField] float attackAnimStartDelay;
+    [SerializeField] float delayBetweenAttacks;
+
+    AudioSource audioSource;
+
+    [SerializeField] AudioClip[] zombieSounds;
+
+    float attackDelayTimer;
 
     public GameManager GameManager { get => gameManager; set => gameManager = value; }
 
@@ -21,6 +31,7 @@ public class EnemyManager : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
         agent = GetComponent<NavMeshAgent>();
+        audioSource = GetComponent<AudioSource>();
         slider.maxValue = health;
         slider.value = health;
     }
@@ -28,6 +39,11 @@ public class EnemyManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(!audioSource.isPlaying)
+        {
+            audioSource.clip = zombieSounds[Random.Range(0, zombieSounds.Length)];
+            audioSource.Play();
+        }
         slider.transform.LookAt(player.transform);
         agent.destination = player.transform.position;
         if (agent.velocity.magnitude > 1)
@@ -44,7 +60,36 @@ public class EnemyManager : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
+            playerInReach = true;
+
+        }
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (playerInReach)
+        {
+            attackDelayTimer += Time.deltaTime;
+        }
+
+        if(attackDelayTimer >= delayBetweenAttacks - attackAnimStartDelay && attackDelayTimer <= delayBetweenAttacks && playerInReach)
+        {
+            anim.SetTrigger("isAttacking");
+        }
+
+        if(attackDelayTimer >= delayBetweenAttacks && playerInReach)
+        {
             player.GetComponent<PlayerController>().PlayerHit(damage);
+            attackDelayTimer = 0;
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if(collision.gameObject == player)
+        {
+            playerInReach = false;
+            attackDelayTimer = 0;
         }
     }
 
@@ -56,7 +101,13 @@ public class EnemyManager : MonoBehaviour
         {
             gameManager.EnemiesAlive--;
             //Destroy Zombie
-            Destroy(gameObject);
+            anim.SetTrigger("isDead");
+            Destroy(gameObject, 10f);
+
+            Destroy(agent);
+            Destroy(GetComponent<EnemyManager>());
+            Destroy(GetComponent<Collider>());
+            canvas.enabled = false;
         }
     }
 }
